@@ -1,0 +1,26 @@
+.custom-btn {
+  color: #0b1f37;
+  border: 1px solid #0b1f37;
+  border-radius: 50px;
+}
+
+.custom-btn:hover {
+  color: white;
+  background-color: #0b1f37;
+  border: 1px solid #0b1f37;
+  border-radius: 50px;
+}
+
+.blue-btn {
+  color: white;
+  background-color: #0b1f37;
+  border: 1px solid #0b1f37;
+  border-radius: 50px;
+}
+
+.blue-btn:hover {
+  color: white;
+  background-color: #0b1f37;
+  border: 1px solid #0b1f37;
+  border-radius: 50px;
+}
