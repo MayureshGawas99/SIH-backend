@@ -80,6 +80,33 @@ const fetchAcceptedChats = asyncHandler(async (req, res) => {
   }
 });
 
+//@description     Fetch all accepted chats for a user
+//@route           GET /api/chat/accepted
+//@access          Protected
+const fetchNotAcceptedChats = asyncHandler(async (req, res) => {
+  try {
+    Chat.find({
+      $and: [
+        { users: { $elemMatch: { $eq: req.user._id } } },
+        { acceptedUsers: { $nin: [req.user._id] } },
+      ],
+    })
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password")
+      .populate("latestMessage")
+      .sort({ updatedAt: -1 })
+      .then(async (results) => {
+        results = await User.populate(results, {
+          path: "latestMessage.sender",
+          select: "name pic email",
+        });
+        res.status(200).send(results);
+      });
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
 // @desc    Add user to Group / Leave
 // @route   PUT /api/chat/groupadd
 // @access  Protected
@@ -277,4 +304,5 @@ module.exports = {
   removeFromGroup,
   fetchAcceptedChats,
   acceptChat,
+  fetchNotAcceptedChats,
 };
