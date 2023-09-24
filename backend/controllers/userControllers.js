@@ -39,7 +39,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    res.status(201).json( { ...user._doc, token: generateToken(user._id) });
+    res.status(201).json({ ...user._doc, token: generateToken(user._id) });
   } else {
     res.status(400);
     throw new Error("User not found");
@@ -47,13 +47,13 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const authUser = asyncHandler(async (req, res) => {
+  console.log("In Login");
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
-    res.json( { ...user._doc
-      , token: generateToken(user._id) });
+    res.json({ ...user._doc, token: generateToken(user._id) });
   } else {
     res.status(401);
     throw new Error("Invalid Email or Password");
