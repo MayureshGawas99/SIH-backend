@@ -8,6 +8,7 @@ const Project = require("../models/projectModel");
 
 const uploadProject = async (req, res) => {
   try {
+    console.log("uploading Projects");
     const file = req.file?.path;
     const {
       title,
