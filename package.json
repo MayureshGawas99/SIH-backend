@@ -1,5 +1,8 @@
 {
   "name": "chat",
+  "engines": {
+    "node": "14.20.1"
+  },
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
