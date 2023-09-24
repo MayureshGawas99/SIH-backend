@@ -2,8 +2,10 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const projectRoutes = require("./routes/projectRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
@@ -13,8 +15,10 @@ connectDB();
 const app = express();
 
 // Enable CORS for all routes
+app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json()); // to accept json data
+// app.use("/pdfs", express.static("uploads"));
 
 app.get("/", (req, res) => {
   res.send("API is running");
@@ -23,6 +27,7 @@ app.get("/", (req, res) => {
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/project", projectRoutes);
 
 // Error handlers
 app.use(notFound);
