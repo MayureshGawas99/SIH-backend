@@ -1,4 +1,5 @@
 const Project = require("../models/projectModel");
+const fs = require("fs");
 // const cloudinary = require("cloudinary").v2;
 // cloudinary.config({
 //   cloud_name: "djuseai07",
@@ -8,7 +9,6 @@ const Project = require("../models/projectModel");
 
 const uploadProject = async (req, res) => {
   try {
-    console.log("uploading Projects");
     const file = req.file?.path;
     const {
       title,
@@ -28,7 +28,7 @@ const uploadProject = async (req, res) => {
       techstacks: JSON.parse(techstacks),
       contributors: JSON.parse(contributors),
       admin: req.user,
-      mentors,
+      mentors: JSON.parse(mentors),
     });
     await newData.save();
 
@@ -58,6 +58,8 @@ const deleteProject = async (req, res) => {
     const removedDoc = await Project.findByIdAndDelete(projectId);
     if (removedDoc) {
       console.log("Removed document:", removedDoc);
+      const filePath = removedDoc.file;
+      fs.unlinkSync(`./${filePath}`);
       res.status(200).send({ message: "Deleted Sucessfully" });
     } else {
       console.log("Document not found.");
@@ -69,8 +71,89 @@ const deleteProject = async (req, res) => {
   }
 };
 
+const getSingleProject = async (req, res) => {
+  try {
+    const projectId = req.params.projectId;
+
+    // Use Mongoose to find the project by ID and populate the fields
+    const project = await Project.findById(projectId)
+      .populate("contributors")
+      .populate("mentors")
+      .populate("admin");
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    // Send the populated project details as a JSON response
+    res.json(project);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+const updateProject = async (req, res) => {
+  try {
+    const file = req.file?.path;
+    console.log("file", file);
+    const {
+      title,
+      description,
+      domains,
+      techstacks,
+      contributors,
+      mentors,
+      organization,
+    } = req.body;
+    const projectId = req.params.projectId;
+    const old = await Project.findById(projectId);
+    if (old) {
+      if (title) {
+        old.title = title;
+      }
+      if (description) {
+        old.description = description;
+      }
+      if (organization) {
+        old.organization = organization;
+      }
+      if (JSON.parse(domains).length) {
+        old.domains = JSON.parse(domains);
+      }
+      if (JSON.parse(techstacks).length) {
+        old.techstacks = JSON.parse(techstacks);
+      }
+      if (JSON.parse(contributors).length) {
+        old.contributors = JSON.parse(contributors);
+      }
+      if (JSON.parse(mentors).length) {
+        old.mentors = JSON.parse(mentors);
+      }
+      if (file) {
+        const filePath = old.file;
+        fs.unlinkSync(`./${filePath}`);
+        old.file = file;
+      }
+      console.log(old);
+      const updatedDocument = await Project.findByIdAndUpdate(projectId, old, {
+        new: true,
+      });
+      if (updatedDocument) {
+        res.status(200).send("Updated Succefully");
+      }
+    } else {
+      res.status(404).send("Project not found");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   uploadProject,
   getProjects,
   deleteProject,
+  getSingleProject,
+  updateProject,
 };

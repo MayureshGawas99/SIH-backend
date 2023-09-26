@@ -5,9 +5,13 @@ const userSchema = mongoose.Schema(
   {
     name: { type: "String", required: true },
     organization: { type: "String", required: true },
+    about: { type: "String", required: false },
     email: { type: "String", unique: true, required: true },
+    domains: { type: [String], required: false },
+    techstacks: { type: [String], required: false },
+    // projects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Project" }],
     password: { type: "String", required: true },
-    role:{type:"Number",default: 3,},
+    role: { type: "Number", default: 3 },
     pic: {
       type: "String",
       required: true,

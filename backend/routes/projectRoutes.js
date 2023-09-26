@@ -4,6 +4,8 @@ const {
   uploadProject,
   getProjects,
   deleteProject,
+  getSingleProject,
+  updateProject,
 } = require("../controllers/projectController");
 const multer = require("multer");
 const path = require("path");
@@ -23,8 +25,11 @@ const upload = multer({ storage: storage });
 const router = express.Router();
 
 router.route("/").get(protect, getProjects);
-// router.route("/single/:projectId").get(protect, getSingleProject);
+router.route("/single/:projectId").get(protect, getSingleProject);
 router.route("/upload").post(protect, upload.single("file"), uploadProject);
+router
+  .route("/update/:projectId")
+  .put(protect, upload.single("file"), updateProject);
 router.route("/delete/:projectId").delete(protect, deleteProject);
 // router.route("/upload").post(protect, upload.single('file'),uploadProject);
 // router.route("/").post(registerUser);
