@@ -179,7 +179,7 @@ const getProjectFile = async (req, res) => {
     const filePath = project.file;
     console.log(filePath);
     const rootPath = path.resolve(__dirname, "../../");
-    const fullPath = path.join(rootPath, filePath);
+    const fullPath = path.join(rootPath, "uploads", path.basename(filePath));
     console.log(fullPath);
     res.status(200).sendFile(fullPath);
   } catch (error) {
