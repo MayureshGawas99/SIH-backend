@@ -174,13 +174,13 @@ const getUserProjects = async (req, res) => {
 const getProjectFile = async (req, res) => {
   try {
     const { projectId } = req.params;
-    console.log(projectId, "ProjectID");
     const project = await Project.findById(projectId);
     const filePath = project.file;
     console.log(filePath);
     const rootPath = path.resolve(__dirname, "../../");
+    console.log(path.basename(filePath), "filename");
     const fullPath = path.join(rootPath, "uploads", path.basename(filePath));
-    console.log(fullPath);
+    console.log(fullPath, "fullpath");
     res.status(200).sendFile(fullPath);
   } catch (error) {
     console.log(error);
