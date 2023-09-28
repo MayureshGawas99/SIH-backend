@@ -1,5 +1,7 @@
 const Project = require("../models/projectModel");
 const fs = require("fs");
+const sfs = require("fs").promises;
+const path = require("path");
 // const cloudinary = require("cloudinary").v2;
 // cloudinary.config({
 //   cloud_name: "djuseai07",
@@ -43,7 +45,10 @@ const uploadProject = async (req, res) => {
 
 const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ admin: req.user._id });
+    const projects = await Project.find({ admin: req.user._id })
+      .populate("contributors")
+      .populate("mentors")
+      .populate("admin");
     res.status(200).json(projects);
   } catch (error) {
     console.error(error);
@@ -150,10 +155,45 @@ const updateProject = async (req, res) => {
   }
 };
 
+const getUserProjects = async (req, res) => {
+  try {
+    console.log("Getting user projects");
+    const { userId } = req.params;
+    const projects = await Project.find({ contributors: userId })
+      .populate("contributors")
+      .populate("mentors")
+      .populate("admin");
+
+    res.status(200).send(projects);
+  } catch (error) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getProjectFile = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    console.log(projectId, "ProjectID");
+    const project = await Project.findById(projectId);
+    const filePath = project.file;
+    console.log(filePath);
+    const rootPath = path.resolve(__dirname, "../../");
+    const fullPath = path.join(rootPath, filePath);
+    console.log(fullPath);
+    res.status(200).sendFile(fullPath);
+  } catch (error) {
+    console.log(error);
+    res.status(404).send("File not found");
+  }
+};
+
 module.exports = {
   uploadProject,
   getProjects,
   deleteProject,
   getSingleProject,
+  getUserProjects,
   updateProject,
+  getProjectFile,
 };

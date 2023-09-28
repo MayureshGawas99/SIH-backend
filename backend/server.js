@@ -16,6 +16,7 @@ const app = express();
 
 // Enable CORS for all routes
 app.use(bodyParser.json());
+app.use(express.static("uploads"));
 app.use(cors());
 app.use(express.json()); // to accept json data
 // app.use("/pdfs", express.static("uploads"));

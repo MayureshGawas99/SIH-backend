@@ -9,6 +9,7 @@ const {
   addToGroup,
   renameGroup,
   fetchNotAcceptedChats,
+  rejectChat,
 } = require("../controllers/chatControllers");
 const { protect } = require("../middleware/authMiddleware");
 
@@ -19,6 +20,7 @@ router.route("/").get(protect, fetchChats);
 router.route("/accepted").get(protect, fetchAcceptedChats);
 router.route("/not-accepted").get(protect, fetchNotAcceptedChats);
 router.route("/accept-chat").put(protect, acceptChat);
+router.route("/reject-chat").post(protect, rejectChat);
 router.route("/group").post(protect, createGroupChat);
 router.route("/rename").put(protect, renameGroup);
 router.route("/groupremove").put(protect, removeFromGroup);

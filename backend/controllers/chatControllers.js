@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Chat = require("../models/chatModel");
 const User = require("../models/userModel");
+const Message = require("../models/messageModel");
 
 //@description     Create or fetch One to One Chat
 //@route           POST /api/chat/
@@ -295,6 +296,21 @@ const addToGroup = asyncHandler(async (req, res) => {
   }
 });
 
+const rejectChat = async (req, res) => {
+  try {
+    const { chatId } = req.body;
+    console.log(chatId);
+    // Step 1: Find and delete the chat by its chatId
+    await Chat.findByIdAndDelete(chatId);
+
+    // Step 2: Delete all messages with the same chatId
+    await Message.deleteMany({ chat: chatId });
+    res.status(200).send("Deleted Succesfully");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   accessChat,
   fetchChats,
@@ -304,5 +320,6 @@ module.exports = {
   removeFromGroup,
   fetchAcceptedChats,
   acceptChat,
+  rejectChat,
   fetchNotAcceptedChats,
 };
