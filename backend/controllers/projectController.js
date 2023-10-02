@@ -20,8 +20,9 @@ const uploadProject = async (req, res) => {
       contributors,
       mentors,
       organization,
+      img,
     } = req.body;
-    const newData = new Project({
+    const allData = {
       title,
       description,
       file,
@@ -31,7 +32,11 @@ const uploadProject = async (req, res) => {
       contributors: JSON.parse(contributors),
       admin: req.user,
       mentors: JSON.parse(mentors),
-    });
+    };
+    if (img) {
+      allData.img = img;
+    }
+    const newData = new Project(allData);
     await newData.save();
 
     res
@@ -110,6 +115,7 @@ const updateProject = async (req, res) => {
       contributors,
       mentors,
       organization,
+      img,
     } = req.body;
     const projectId = req.params.projectId;
     const old = await Project.findById(projectId);
@@ -122,6 +128,9 @@ const updateProject = async (req, res) => {
       }
       if (organization) {
         old.organization = organization;
+      }
+      if (img) {
+        old.img = img;
       }
       if (JSON.parse(domains).length) {
         old.domains = JSON.parse(domains);
@@ -188,6 +197,27 @@ const getProjectFile = async (req, res) => {
   }
 };
 
+const getRecentProjects = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Current page number, default to 1
+    const limit = parseInt(req.query.limit) || 10; // Number of projects per page, default to 10
+
+    const startIndex = (page - 1) * limit;
+
+    // Find all projects, sort by timestamp in descending order, and apply pagination
+    const recentProjects = await Project.find()
+      .sort({ createdAt: -1 })
+      .skip(startIndex)
+      .limit(limit);
+
+    // Send the paginated projects as a response
+    res.json(recentProjects);
+  } catch (error) {
+    // Handle errors appropriately
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   uploadProject,
   getProjects,
@@ -196,4 +226,5 @@ module.exports = {
   getUserProjects,
   updateProject,
   getProjectFile,
+  getRecentProjects,
 };
